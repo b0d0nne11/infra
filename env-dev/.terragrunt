@@ -1,0 +1,17 @@
+lock = {
+  backend = "dynamodb"
+  config {
+    state_file_id = "infra"
+    aws_region = "us-east-2"
+  }
+}
+
+remote_state = {
+  backend = "s3"
+  config {
+    encrypt = "true"
+    bucket = "infra.b0d0nne11.com"
+    key = "env-dev/terraform.tfstate"
+    region = "us-east-2"
+  }
+}
