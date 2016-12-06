@@ -28,25 +28,3 @@ resource "aws_iam_instance_profile" "ecs" {
   name = "ecs"
   roles = ["${aws_iam_role.ecs.name}"]
 }
-
-resource "aws_iam_role" "empty" {
-  name = "empty"
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [{
-    "Sid": "",
-    "Effect": "Allow",
-    "Principal": {
-      "Service": "ec2.amazonaws.com"
-    },
-    "Action": "sts:AssumeRole"
-  }]
-}
-EOF
-}
-
-resource "aws_iam_instance_profile" "empty" {
-  name = "empty"
-  roles = ["${aws_iam_role.empty.name}"]
-}

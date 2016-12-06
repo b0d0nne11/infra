@@ -7,7 +7,7 @@ variable "key_name"         { }
 variable "desired_capacity" { default = 1             }
 variable "image_name"       { default = "ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*" }
 variable "type"             { default = "t2.micro"    }
-variable "iam_profile"      { default = "empty"       }
+variable "iam_profile"      { default = ""            }
 variable "user_data_file"   { default = "default.yml" }
 variable "user_data_vars"   { default = {}            }
 variable "ingress_ports"    { default = []            }
