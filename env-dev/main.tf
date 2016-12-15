@@ -23,7 +23,7 @@ module "vpc" {
 }
 
 resource "aws_key_pair" "deploy" {
-  key_name_prefix = "${var.env_name}"
+  key_name = "${var.env_name}"
   public_key = "${file(var.public_key)}"
 }
 
