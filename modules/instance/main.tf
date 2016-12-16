@@ -20,6 +20,10 @@ data "aws_ami" "selected_image" {
   }
 }
 
+data "aws_route53_zone" "selected_zone" {
+  name = "#{var.domain}"
+}
+
 data "aws_security_group" "vpc_default_sg" {
   vpc_id = "${var.vpc_id}"
   name = "default"
@@ -65,4 +69,13 @@ resource "aws_instance" "cluster" {
   tags {
     Name = "${element(data.template_file.user_data.*.vars.fqdn, count.index)}"
   }
+}
+
+resource "aws_route53_record" "cluster_a_record" {
+  count = "${var.desired_capacity}"
+  zone_id = "${data.aws_route53_zone.selected_zone.zone_id}"
+  name = "${element(data.template_file.user_data.*.vars.fqdn, count.index)}."
+  type = "A"
+  ttl = "300"
+  records = ["${element(aws_instance.cluster.*.private_ip, count.index)}"]
 }
