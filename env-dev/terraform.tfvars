@@ -12,3 +12,6 @@ public_cidrs = [
   "172.31.16.0/20",
   "172.31.32.0/20"
 ]
+
+chef_org = "b0d0nne11"
+chef_validation_file = "~/.chefdk/b0d0nne11-validator.pem"

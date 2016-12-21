@@ -1,3 +1,4 @@
+variable "env"              { }
 variable "role"             { }
 variable "domain"           { }
 variable "vpc_id"           { }
@@ -11,6 +12,10 @@ variable "iam_profile"      { default = ""            }
 variable "user_data_file"   { default = "default.yml" }
 variable "user_data_vars"   { default = {}            }
 variable "ingress_ports"    { default = []            }
+variable "chef_server"      { default = "api.chef.io" }
+variable "chef_org"         { default = "acme"        }
+variable "chef_validation_file" { default = "~/.chefdk/acme-validator.pem" }
+variable "chef_bastion_host"    { default = ""                             }
 
 data "aws_ami" "selected_image" {
   most_recent = true
@@ -69,6 +74,25 @@ resource "aws_instance" "cluster" {
   tags {
     Name = "${element(data.template_file.user_data.*.vars.fqdn, count.index)}"
   }
+  provisioner "chef" {
+    connection {
+      type = "ssh"
+      host = "${var.chef_bastion_host == "" ? self.public_ip : self.private_ip}"
+      user = "ubuntu"
+      agent = true
+      bastion_host = "${var.chef_bastion_host}"
+    }
+    server_url = "https://${var.chef_server}/organizations/${var.chef_org}"
+    environment = "${var.env}"
+    run_list = ["role[base]", "role[${var.role}]"]
+    node_name = "${element(data.template_file.user_data.*.vars.fqdn, count.index)}"
+    user_name = "${var.chef_org}-validator"
+    user_key = "${file(var.chef_validation_file)}"
+  }
+}
+
+output "instance_ids" {
+  value = ["${aws_instance.cluster.*.public_ip}"]
 }
 
 resource "aws_route53_record" "cluster_a_record" {
