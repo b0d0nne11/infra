@@ -14,5 +14,10 @@ resource "aws_route53_record" "selected_NS" {
   name = "${element(split(",", element(var.domains, count.index)), 0)}"
   type = "NS"
   ttl = "300"
-  records = ["${element(aws_route53_zone.selected.*.name_servers, count.index)}"]
+  records = [
+    "${element(aws_route53_zone.selected.*.name_servers.0, count.index)}",
+    "${element(aws_route53_zone.selected.*.name_servers.1, count.index)}",
+    "${element(aws_route53_zone.selected.*.name_servers.2, count.index)}",
+    "${element(aws_route53_zone.selected.*.name_servers.3, count.index)}"
+  ]
 }
