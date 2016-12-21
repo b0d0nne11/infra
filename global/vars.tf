@@ -1,0 +1,1 @@
+variable "domains" { type = "list" }
