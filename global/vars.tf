@@ -1,1 +1,1 @@
-variable "domains" { type = "list" }
+variable "root_zone_name" { }

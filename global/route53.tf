@@ -1,23 +1,20 @@
 data "aws_route53_zone" "root" {
-  count = "${length(var.domains)}"
-  name = "${element(split(",", element(var.domains, count.index)), 1)}"
+  name = "${var.root_zone_name}"
 }
 
-resource "aws_route53_zone" "selected" {
-  count = "${length(var.domains)}"
-  name = "${replace(element(var.domains, count.index), ",", ".")}"
+resource "aws_route53_zone" "dev" {
+  name = "dev.${var.root_zone_name}"
 }
 
-resource "aws_route53_record" "selected_NS" {
-  count = "${length(var.domains)}"
-  zone_id = "${element(data.aws_route53_zone.root.*.zone_id, count.index)}"
-  name = "${element(split(",", element(var.domains, count.index)), 0)}"
+resource "aws_route53_record" "dev_delegation" {
+  zone_id = "${data.aws_route53_zone.root.zone_id}"
+  name = "dev"
   type = "NS"
   ttl = "300"
   records = [
-    "${element(aws_route53_zone.selected.*.name_servers.0, count.index)}",
-    "${element(aws_route53_zone.selected.*.name_servers.1, count.index)}",
-    "${element(aws_route53_zone.selected.*.name_servers.2, count.index)}",
-    "${element(aws_route53_zone.selected.*.name_servers.3, count.index)}"
+    "${aws_route53_zone.dev.name_servers[0]}",
+    "${aws_route53_zone.dev.name_servers[1]}",
+    "${aws_route53_zone.dev.name_servers[2]}",
+    "${aws_route53_zone.dev.name_servers[3]}"
   ]
 }
